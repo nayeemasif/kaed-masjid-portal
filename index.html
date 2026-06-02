@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>KAED Heritage Masjid 3D-Portal</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+/* =========================
+   GLOBAL STYLE
+========================= */
+body {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  background: #f2f4f7;
+}
+
+/* =========================
+   HEADER (PUBLICATION STYLE)
+========================= */
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #7f11ba;
+  color: white;
+
+  padding: 12px 18px;
+  font-weight: bold;
+}
+
+#header small {
+  font-weight: normal;
+  opacity: 0.85;
+}
+
+/* IIUM LOGO */
+#header img {
+  height: 45px;
+  background: white;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+/* =========================
+   MAIN GRID
+========================= */
+#container {
+  display: grid;
+  grid-template-columns: 35% 35% 30%;
+
+  height: calc(100vh - 60px - 30px);
+}
+
+/* =========================
+   MAP PANEL
+========================= */
+#map {
+  height: 100%;
+}
+
+/* =========================
+   METADATA PANEL
+========================= */
+#info {
+  background: white;
+  padding: 16px;
+  overflow-y: auto;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.card {
+  background: #fafafa;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.label {
+  font-size: 12px;
+  color: #666;
+}
+
+.value {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* =========================
+   VIEWER PANEL
+========================= */
+#viewer {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: black;
+}
+
+/* =========================
+   MAP LEGEND STYLE POPUP
+========================= */
+.leaflet-popup-content {
+  font-size: 13px;
+}
+
+button {
+  background: #0b3d2e;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+button:hover {
+  background: #145c44;
+}
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  text-align: center;
+  font-size: 12px;
+  padding: 6px;
+
+  background: #f2f4f7;
+  color: #444;
+  border-top: 1px solid #ddd;
+
+  z-index: 9999;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================
+     HEADER
+========================= -->
+<div id="header">
+  <div>
+    KAED Heritage Masjid 3D-Portal<br>
+    <small>Web GIS + 3D Gaussian Splatting Reconstruction</small>
+  </div>
+
+  <img src="https://office.iium.edu.my/ocap/wp-content/uploads/sites/2/2021/09/Official_Logo_IIUM_Kanan.png">
+</div>
+
+<!-- =========================
+     MAIN LAYOUT
+========================= -->
+<div id="container">
+
+<!-- MAP -->
+<div id="map"></div>
+
+<!-- INFO -->
+<div id="info">
+  <h3>Project Metadata</h3>
+  <p>Select a mosque from the map to view details.</p>
+</div>
+
+<!-- VIEWER -->
+<iframe id="viewer"></iframe>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+/* =========================
+   UPDATE METADATA PANEL
+========================= */
+function loadMosque(name, location, coord, year, type, desc, file) {
+
+  document.getElementById("info").innerHTML = `
+
+    <h3>${name}</h3>
+
+    <div class="card">
+      <div class="label">Location</div>
+      <div class="value">${location}</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Coordinates</div>
+      <div class="value">${coord}</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Construction Year</div>
+      <div class="value">${year}</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Building Type</div>
+      <div class="value">${type}</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Historical Description</div>
+      <div class="value">${desc}</div>
+    </div>
+
+  `;
+
+  document.getElementById("viewer").src =
+    "models/" + file;
+}
+
+/* =========================
+   MAP INITIALIZATION
+========================= */
+var map = L.map('map').setView([3.0, 101.8], 8);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19
+}).addTo(map);
+
+/* =========================
+   MOSQUE 1
+========================= */
+L.marker([3.2508495973916265, 101.73085708395273])
+.addTo(map)
+.on("click", function () {
+
+  loadMosque(
+    "Waqaf Masjid Sg Chinchin",
+    "KAED, IIUM, Kuala Lumpur",
+    "3.250850, 101.730857",
+    "2020",
+    "Heritage Reconstruction / Waqf Structure",
+    "Reconstruction of the roof structure of Masjid Sungai Chinchin (80+ year old mosque). Built as an educational heritage exhibit at KAED, IIUM.",
+    "KAED_Waqaf_Sg_Chinchin.html"
+  );
+
+});
+
+/* =========================
+   MOSQUE 2
+========================= */
+L.marker([2.730023519632991, 102.14887321873461])
+.addTo(map)
+.on("click", function () {
+
+  loadMosque(
+    "Masjid Kg Parit Istana",
+    "Kampung Parit Tengah, Seri Menanti, Negeri Sembilan",
+    "2.730024, 102.148873",
+    "1773",
+    "Traditional Village Mosque",
+    "Historic mosque reflecting early Malay settlement architecture and long-standing religious and community traditions in Negeri Sembilan.",
+    "Masjid_Kg_Parit_N9.html"
+  );
+
+});
+
+/* =========================
+   MOSQUE 3
+========================= */
+L.marker([2.863249417820344, 101.43987637955951])
+.addTo(map)
+.on("click", function () {
+
+  loadMosque(
+    "Masjid DiRaja Sultan Ala'eddin",
+    "Jalan Istana Lama, Banting, Selangor",
+    "2.863249, 101.439876",
+    "1905",
+    "Royal Mosque",
+    "Historic royal mosque built during the reign of Sultan Ala'eddin Sulaiman Shah. Features Moorish, Mughal and Deli architectural influences.",
+    "Masjid_SA_Selangor.html"
+  );
+
+});
+
+</script>
+
+<div id="footer">
+©Copyright: Department of Architecture, Kulliyyah of Architecture and Environmental Design, IIUM.
+</div>
+
+</body>
+</html>
